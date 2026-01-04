@@ -2,11 +2,11 @@
 document.addEventListener('DOMContentLoaded', function() {
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const navLinks = document.querySelector('.nav-links');
-    let isMenuOpen = false; // Track menu state
+    let isMenuOpen = false;
     
     if (mobileMenuBtn) {
         mobileMenuBtn.addEventListener('click', function(e) {
-            e.stopPropagation(); // Prevent click from bubbling up
+            e.stopPropagation();
             isMenuOpen = !isMenuOpen;
             
             if (isMenuOpen) {
@@ -28,7 +28,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Close menu when clicking outside - FIXED
         document.addEventListener('click', function(event) {
-            // Only hide if menu is open AND click is outside menu/button
             if (isMenuOpen && 
                 !event.target.closest('.nav-links') && 
                 !event.target.closest('.mobile-menu-btn')) {
@@ -61,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (startLearningBtn) {
         startLearningBtn.addEventListener('click', function() {
             alert('Starting your learning journey! Get ready for AI-powered quizzes.');
-            // Animation effect
             this.style.transform = 'scale(0.95)';
             setTimeout(() => {
                 this.style.transform = 'scale(1)';
@@ -72,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (exploreBtn) {
         exploreBtn.addEventListener('click', function() {
             alert('Exploring available quizzes...');
-            // Animation effect
             this.style.transform = 'scale(0.95)';
             setTimeout(() => {
                 this.style.transform = 'scale(1)';
@@ -85,21 +82,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     quizOptions.forEach(option => {
         option.addEventListener('click', function() {
-            // Remove any previous selections
             quizOptions.forEach(opt => {
                 opt.classList.remove('selected');
             });
             
-            // Add selected class to clicked option
             this.classList.add('selected');
             
-            // If correct, show success message
             if (this.classList.contains('correct')) {
                 this.style.backgroundColor = '#e8f5e9';
                 this.style.color = '#2e7d32';
                 this.style.borderColor = '#4caf50';
                 
-                // Show success message
                 const message = document.createElement('div');
                 message.className = 'quiz-feedback';
                 message.textContent = 'Correct! Well done!';
@@ -117,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     animation: fadeIn 0.3s ease;
                 `;
                 
-                // Remove any existing feedback
                 const existingFeedback = document.querySelector('.quiz-feedback');
                 if (existingFeedback) {
                     existingFeedback.remove();
@@ -126,17 +118,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.parentElement.style.position = 'relative';
                 this.parentElement.appendChild(message);
                 
-                // Remove feedback after 2 seconds
                 setTimeout(() => {
                     message.remove();
                 }, 2000);
             } else {
-                // If incorrect, show error state
                 this.style.backgroundColor = '#ffebee';
                 this.style.color = '#c62828';
                 this.style.borderColor = '#ef5350';
                 
-                // Highlight correct answer
                 const correctOption = document.querySelector('.correct');
                 correctOption.style.backgroundColor = '#e8f5e9';
                 correctOption.style.color = '#2e7d32';
@@ -169,14 +158,12 @@ document.addEventListener('DOMContentLoaded', function() {
         rotation += 1;
         if (rotation > 360) rotation = 0;
         
-        // Create a gradient that rotates
         progressRing.style.borderTop = `8px solid #6a11cb`;
         progressRing.style.transform = `rotate(${rotation}deg)`;
         
         requestAnimationFrame(animateProgress);
     }
     
-    // Start the animation
     animateProgress();
     
     // Stats counter animation

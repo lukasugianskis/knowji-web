@@ -7,14 +7,13 @@
 }
 
 html, body {
-    overscroll-behavior: none; /* Prevents bounce/overscroll */
+    overscroll-behavior: none;
 }
 
-/* OR more specific */
 body {
-    overscroll-behavior-y: none; /* Only prevent vertical overscroll */
+    overscroll-behavior-y: none;
 }
-/* Replace your body styles */
+
 body {
     background: linear-gradient(to bottom, 
         #01031a 0%,
@@ -28,111 +27,118 @@ body {
     position: relative;
 }
 
+/* .top-right-image {
+    position: absolute; 
+    top: 0px;           
+    right: 0px;         
+    width: 500px;       
+    height: auto;  
+    z-index: 0;      
+} /* Stays on top of other elements if overlapping */
+
 /* Star layer 1 - Small distant stars */
-.stars {
+/* ---------- Base star layers ---------- */
+.stars,
+.stars2,
+.stars3 {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        radial-gradient(1px 1px at 25% 25%, #fff, transparent),
-        radial-gradient(1px 1px at 75% 75%, #fff, transparent),
-        radial-gradient(1px 1px at 50% 10%, #fff, transparent),
-        radial-gradient(1px 1px at 90% 50%, #fff, transparent),
-        radial-gradient(1px 1px at 10% 90%, #fff, transparent);
-    background-repeat: repeat;
-    background-size: 300px 300px;
-    z-index: -3;
-    opacity: 0.3;
+    inset: 0;
+    pointer-events: none;
 }
 
-/* Star layer 2 - Medium stars */
+/* Small distant stars */
+.stars {
+    background:
+        radial-gradient(1px 1px at 20% 30%, #fff, transparent),
+        radial-gradient(1px 1px at 80% 70%, #fff, transparent),
+        radial-gradient(1px 1px at 50% 10%, #fff, transparent),
+        radial-gradient(1px 1px at 90% 40%, #fff, transparent),
+        radial-gradient(1px 1px at 10% 90%, #fff, transparent);
+    background-size: 250px 250px;
+    opacity: 0.25;
+    z-index: -3;
+    animation: drift 120s linear infinite;
+}
+
+/* Medium stars */
 .stars2 {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
+    background:
         radial-gradient(2px 2px at 15% 65%, #fff, transparent),
         radial-gradient(2px 2px at 85% 35%, #fff, transparent),
         radial-gradient(2px 2px at 35% 85%, #fff, transparent),
         radial-gradient(2px 2px at 65% 15%, #fff, transparent);
-    background-repeat: repeat;
     background-size: 400px 400px;
+    opacity: 0.35;
     z-index: -2;
-    opacity: 0.4;
+    animation: drift 180s linear infinite reverse;
 }
 
-/* Star layer 3 - Large bright stars */
+/* Bright twinkling stars */
 .stars3 {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        radial-gradient(3px 3px at 20% 80%, #ffffaa, transparent),
-        radial-gradient(3px 3px at 80% 20%, #ffffaa, transparent),
-        radial-gradient(3px 3px at 40% 60%, #ffffaa, transparent),
-        radial-gradient(3px 3px at 60% 40%, #ffffaa, transparent);
-    background-repeat: repeat;
+    background:
+        radial-gradient(3px 3px at 25% 75%, #fffacd, transparent),
+        radial-gradient(3px 3px at 75% 25%, #fffacd, transparent),
+        radial-gradient(3px 3px at 45% 55%, #fffacd, transparent);
     background-size: 500px 500px;
+    opacity: 0.6;
     z-index: -1;
-    opacity: 0.5;
-    animation: twinkle 3s infinite alternate;
+    animation: twinkle 4s ease-in-out infinite alternate;
 }
 
-/* Shooting stars */
-.shooting-star {
+/* ---------- Shooting stars ---------- */
+/* Shooting stars container */
+.shooting-stars {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, white);
-    transform: rotate(45deg);
-    animation: shoot 10s infinite;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1; /* behind your content but above stars */
+}
+
+/* Each shooting star */
+.shooting-stars span {
+    position: absolute;
+    width: 4px; 
+    height: 80px; 
+    background: linear-gradient(
+        90deg,
+        rgba(255,255,255,1) 0%,
+        rgba(255,255,255,0.3) 70%,
+        rgba(255,255,255,0) 100%
+    );
+    border-radius: 50%;
+    filter: blur(1px);
+    transform: rotate(315deg); /* angle of shooting */
     opacity: 0;
-    z-index: -1;
+    animation: shoot 3s linear infinite;
 }
 
-.shooting-star:nth-child(2) {
-    top: 20%;
-    animation-delay: 3s;
-    animation-duration: 8s;
-}
-
-.shooting-star:nth-child(3) {
-    top: 60%;
-    animation-delay: 7s;
-    animation-duration: 12s;
-}
-
+/* ---------- Animations ---------- */
 @keyframes twinkle {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 0.7; }
+    0% { opacity: 0.3; }
+    100% { opacity: 0.8; }
+}
+
+@keyframes drift {
+    from { transform: translate(0, 0); }       /* start at original position */
+    to { transform: translate(500px, -1000px); } /* move 500px right and 1000px up */
 }
 
 @keyframes shoot {
     0% {
-        transform: translateX(-100px) translateY(-100px) rotate(45deg);
+        transform: translate(-30vw, -30vh) rotate(45deg);
         opacity: 0;
     }
-    10% {
+    8% {
         opacity: 1;
     }
     20% {
-        transform: translateX(100vw) translateY(100vh) rotate(45deg);
+        transform: translate(120vw, 120vh) rotate(45deg);
         opacity: 0;
     }
     100% {
         opacity: 0;
     }
 }
-
-
 
 .container {
     max-width: 1200px;
@@ -153,12 +159,12 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
+    margin-left: 200px;
 }
 
-/* Default sizes */
 .logo-icon,
 .logo img:first-child {
-    width: 32px; /* Smaller default */
+    width: 32px;
     height: 32px;
 }
 
@@ -171,7 +177,6 @@ body {
     color: transparent;
 }
 
-/* Even smaller on mobile */
 @media (max-width: 768px) {
     .logo-icon,
     .logo img:first-child {
@@ -187,6 +192,7 @@ body {
 .nav-links {
     display: flex;
     gap: 30px;
+    margin-right: 200px;
 }
 
 .nav-link {
@@ -197,12 +203,12 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: all 0.3s ease; /* Change from just color to all */
+    transition: all 0.3s ease;
 }
 
 .nav-link:hover {
-    color: #ffffff; /* Change color */
-    transform: translateY(-1px); /* The "lift" effect */
+    color: #ffffff;
+    transform: translateY(-1px);
 }
 
 .mobile-menu-btn {
@@ -223,11 +229,11 @@ body {
 
 .hero-content {
     flex: 1;
-    display: flex; /* Add this */
-    flex-direction: column; /* Add this */
-    align-items: center; /* ← THIS centers everything inside */
-    max-width: 800px; /* Optional: Limit width for better centering */
-    margin: 0 auto; /* Centers the container itself */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .hero-title {
@@ -300,15 +306,26 @@ body {
     gap: 40px;
 }
 
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* center the number and text */
+}
+
 .stat-item h3 {
     font-size: 32px;
     color: #ffffff;
     margin-bottom: 5px;
+     width: 8cap;          /* keeps the counter width fixed */
+    text-align: center;   /* centers the number inside the width */
+    font-family: 'Poppins', sans-serif; /* optional, prevents shifting digits */
 }
 
 .stat-item p {
     color: #bcbcbc;
     font-size: 16px;
+    text-align: center;   /* matches the number */
+    margin: 0;
 }
 
 /* Hero Image/Illustration */
@@ -437,96 +454,257 @@ body {
 .features {
     margin-bottom: 80px;
     margin-top: 120px;
-}
-
-/* Centered but shifted 30px to the right */
-.features .section-title {
-    width: 600px;
-    word-wrap: break-word;
-    text-align: left;
-    margin: 0 auto 50px; /* Centers it */
     position: relative;
-    left: 20px; /* Shifts it right from center */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
-.section-title {
-    text-align: left;
-    font-size: 28px;
-    color: #ffffff;
-    margin-bottom: 50px;
-    font-weight: 700;
+/* Aura Glow Effect */
+.aura-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    text-align: center;
+}
+
+.aura-text {
+    position: relative;
+    z-index: 2;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 15px;
-    word-spacing: 2px;
+    text-align: center;
+    margin: 0 auto 50px;
+    margin-top: -30px;
+    margin-bottom: -80px;
+    font-size: 35px;
+    color: #ffffff;
+    font-weight: 600;
+    word-spacing: -2px;
+    padding: 20px 0;
+}
+
+.aura-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.aura-text2 {
+  margin-top: 150px;
+  font-size: 28px;
+  font-weight: 600;
+  color: #ffffff;
 }
 
 .title-icon {
     width: 60px;
     height: 60px;
     object-fit: contain;
+    visibility: hidden;
 }
 
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
+.abilities-container {
+    position: relative;
+    display: flex;
+    justify-content: center; /* horizontal center */
+    align-items: center;     /* vertical center */
+    width: 100%;             /* full width of parent */
+    height: 200px;           /* or whatever height you want */
+    text-align: center;
+    background: transparent;        /* just for visibility */
+}
+
+.ability-text {
+    font-size: 40px;
+    color: #ffffff;
+    font-weight: 600;
+    word-spacing: -1px;
+}
+
+.ability-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* features cards */
+
+.features-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* smaller gap between cards */
+  width: 100%;
+  margin: 0;
+  padding: 50px 20px;
+  font-family: poppins, sans-serif;
+  /* remove margin-top: -100px unless you need it */
 }
 
 .feature-card {
-    background: #636363;
-    border-radius: 16px;
-    border: 0px solid #f0f0f0;
-    padding: 75px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    text-align: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: transparent;
+  border-radius: 16px;
+  padding: 50px; /* reduce padding from 150px to 50px */
+  gap: 40px;
+  margin-left: 90px; /* remove extra left margin */
 }
 
-.feature-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+.feature-left {
+  flex: 1;
 }
 
-.feature-icon {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-    color: white;
-    border-radius: 50%;
+.feature-tag {
+  color: transparent;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: -14px;
+  text-transform: uppercase;
+}
+
+.feature-title {
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.feature-desc {
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: #555;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
+.feature-btn {
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  color: white;
+  border: 2px solid #fff;
+  border-radius: 8px;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.3s ease;
+}
+
+/* shine */
+.feature-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transition: left 1.2s ease;
+}
+
+.feature-btn:hover::before {
+  left: 150%;
+}
+
+.feature-btn:hover {
+  transform: scale(1.05);
+}
+
+.feature-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.feature-icons {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.feature-icons img {
+  width: 450px;
+  height: 450px;
+}
+
+.feature-subtitle {
+  font-weight: 600;
+  color: #333;
+  font-size: 16px;
+}
+.footer-line {
+  position: relative;
+  height: 1px;
+  background: transparent;
+  overflow: visible;
+}
+
+/* smooth pinkish-purple fade */
+.footer-line::before {
+  content: "";
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(
+    to top,
+    rgba(219, 112, 219, 0.8) 0%,     /* pinkish purple - strongest */
+    rgba(219, 112, 219, 0.5) 25%,    /* solid color */
+    rgba(219, 112, 219, 0.3) 50%,    /* medium fade */
+    rgba(219, 112, 219, 0.15) 75%,   /* light fade */
+    rgba(219, 112, 219, 0) 100%      /* fully transparent */
+  );
+  filter: blur(8px);
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+.social-icons {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px;
-    font-size: 30px;
+    justify-content: center;  /* center icons */
+    gap: 20px;                /* spacing between icons */
+    margin-top: 40px;
 }
 
-.feature-card h3 {
-    font-size: 22px;
-    color: #2c3e50;
-    margin-bottom: 15px;
+.social-icons a i {
+    color: #ccc;           /* white icons */
+    font-size: 20px;          /* size of icons */
+    transition: transform 0.3s, color 0.3s;
 }
 
-.feature-card p {
-    color: #666;
-    line-height: 1.6;
+.social-icons a i:hover {
+    transform: scale(1.2);    /* zoom on hover */
+    color: #8f8f8f;           /* pinkish-purple hover color */
 }
 
 /* Footer */
 .footer {
     text-align: center;
     padding: 30px 0;
-    color: #777;
-    border-top: 1px solid #eee;
-    margin-top: 40px;
-}
-
-.footer-links {
-    margin-left: 20px;
+    color: #ccc; /* Light gray text instead of transparent */
+    border-top: 2px solid rgba(240, 145, 255, 0.5); /* Semi-transparent border */
+    margin-top: 150px;
+    font-family: sans-serif;
+    background-color: #0b0b1e; /* Dark background */
 }
 
 .footer-links a {
-    color: #6a11cb;
+    color: #ccc;
     text-decoration: none;
     margin: 0 10px;
 }
@@ -534,6 +712,109 @@ body {
 .footer-links a:hover {
     text-decoration: underline;
 }
+
+.social-icons {
+    margin-top: 15px;
+}
+
+.testimonials {
+  max-width: none;
+  margin: 0;
+  padding: 80px 2%;
+}
+
+.container,
+main,
+.wrapper {
+  max-width: none;
+  width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.testimonials {
+  position: relative;
+  overflow: hidden;
+}
+
+.testimonials::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+  circle at center,
+  rgba(255, 120, 255, 0.35) 0%,
+  rgba(22, 36, 120, 0.18) 30%,
+  rgba(38, 48, 183, 0) 70%
+    );
+    z-index: -1;
+  pointer-events: none;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 22px;
+}
+
+.testimonial-card {
+  background: white;
+  border-radius: 13px;
+  padding: 13px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.username {
+  font-weight: 600;
+  font-size: 12px;
+    color: #585858;
+}
+
+.message {
+  margin: 12px 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #111;
+  font-weight: 700;
+}
+
+.card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #777;
+}
+
+.likes {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ff4d88;
+  font-weight: 600;
+}
+
+/* soft column gradients like the image */
+.testimonial-card:nth-child(4n+1) { background: linear-gradient(#fff, #f5f7ff); }
+.testimonial-card:nth-child(4n+2) { background: linear-gradient(#fff, #f7f5ff); }
+.testimonial-card:nth-child(4n+3) { background: linear-gradient(#fff, #fff4f7); }
+.testimonial-card:nth-child(4n+4) { background: linear-gradient(#fff, #f6fff8); }
 
 /* Responsive Design */
 @media (max-width: 992px) {
@@ -557,6 +838,19 @@ body {
     .illustration {
         width: 350px;
         height: 350px;
+    }
+    
+    .aura-text {
+        font-size: 24px;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .aura-glow,
+    .aura-glow-2,
+    .aura-glow-3 {
+        width: 150%;
+        height: 180px;
     }
 }
 
@@ -602,5 +896,43 @@ body {
     .footer-links {
         display: block;
         margin: 10px 0 0 0;
+    }
+    
+    .aura-text {
+        font-size: 20px;
+        padding: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .title-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .aura-glow,
+    .aura-glow-2,
+    .aura-glow-3 {
+        width: 180%;
+        height: 160px;
+    }
+}
+
+@media (max-width: 480px) {
+    .aura-text {
+        font-size: 18px;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .title-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .aura-glow,
+    .aura-glow-2,
+    .aura-glow-3 {
+        width: 200%;
+        height: 140px;
     }
 }

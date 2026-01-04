@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="/images/webicon.svg" type="image/x-icon">
-
-
+    <link rel="icon" href="/images/favicon.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Knowji - IGCSE Tutor</title>
@@ -24,8 +22,8 @@
         <!-- Navigation -->
         <nav class="navbar">
             <div class="logo">
-        <img src="/images/webicon.svg" alt="Knowji Logo" class="logo-icon">
-        <h1 class="logo-text">knowji.ai</h1>
+                <img src="/images/webicon.svg" alt="Knowji Logo" class="logo-icon">
+                <h1 class="logo-text">knowji.ai</h1>
             </div>
             <div class="nav-links">
                 <a href="#" class="nav-link"><i class="fas fa-download"></i> Download app</a>
@@ -97,31 +95,109 @@
 
         <!-- Features Section -->
         <section class="features">
-            <h2 class="section-title"> <img src="/images/cambridge-icon.png" alt="Icon" class="title-icon"> Made with ❤️ by an IGCSE student, for IGCSE students...</h2>
-        </section>
-
-        <section class="included">
-            <div class="included-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-robot"></i>
+            <div class="aura-container">
+                <h2 class="section-title aura-text">
+                   <div class="aura-wrapper">
+                    <div class="aura-text">Built with ❤️ by an IGCSE student, made to help IGCSE students win...</div>
+                    <div class="aura-text2"> & heres what people have to say:</div>
                     </div>
-                    <h3>AI-Powered Quizzes</h3>
-                    <p>Intelligent quizzes that adjust difficulty based on your performance.</p>
+                </h2>
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <p>&copy; 2026 Knowji. All rights reserved. <span class="footer-links">
-                <a href="#">Privacy Policy</a> | 
-                <a href="#">Terms of Service</a> | 
-                <a href="#">Contact Us</a>
-            </span></p>
-        </footer>
+        <section class="testimonials">
+  <div class="testimonials-grid" id="testimonialsGrid"></div>
+</section>
+
+<script src="/public/testimonials.js"></script>
+
+     <section class="abilities">
+            <div class="abilities-container">
+                <h2 class="abilities-title ability-text">
+                   <div class="ability-wrapper">
+                    <div class="ability-text">Knowji makes learning effortless</div>
+                    </div>
+                </h2>
+            </div>
+        </section>
+
+        <div class="features-container">
+  <!-- Feature 1 -->
+  <div class="feature-card">
+    <div class="feature-left">
+      <div class="feature-tag">Learn Smarter</div>
+      <h2 class="feature-title">Spaced repetition</h2>
+      <p class="feature-desc">
+        Our system uses spaced repetition to help you retain information efficiently.
+      </p>
+      <button class="feature-btn">Start learning ‎ ‎ <i class="fa-solid fa-arrow-up-right-from-square"></i></button>
     </div>
+    <div class="feature-right">
+      <div class="feature-icons">
+        <img src="/images/spaced-repetition.png" alt="PDF">
+      </div>
+      <div class="feature-subtitle"></div>
+    </div>
+  </div>
+
+  <!-- Feature 2 -->
+  <div class="feature-card">
+    <div class="feature-left">
+      <div class="feature-tag">Unlimited Recourses</div>
+      <h2 class="feature-title">Explore Our Extensive Questionbank</h2>
+      <p class="feature-desc">
+        Ensure you learn everything with our vast collection of practice questions.
+      </p>
+      <button class="feature-btn">Explore ‎ ‎  <i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+    </div>
+    <div class="feature-right">
+      <div class="feature-icons">
+        <img src="/images/spaced-repetition.png" alt="Chart">
+      </div>
+      <div class="feature-subtitle"></div>
+    </div>
+  </div>
+
+  <!-- Feature 3 -->
+  <div class="feature-card">
+    <div class="feature-left">
+      <div class="feature-tag">Stay Consistent</div>
+      <h2 class="feature-title">Track Your Progress</h2>
+      <p class="feature-desc">
+       Monitor your learning stats and identify which topics need extra focus.
+      </p>
+      <button class="feature-btn">View stats ‎ ‎   <i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+    </div>
+    <div class="feature-right">
+      <div class="feature-icons">
+        <img src="/images/spaced-repetition.png" alt="Mobile">
+      </div>
+      <div class="feature-subtitle"></div>
+    </div>
+  </div>
+</div>
+
+      <!-- Footer -->
+<footer class="footer">
+    <div class="footer-line"></div>
+    <p>
+        &copy; 2026 Knowji. All rights reserved.
+        <span class="footer-links">
+            <a href="#">Privacy Policy</a> |
+            <a href="#">Terms of Service</a> |
+            <a href="#">Contact Us</a>
+        </span>
+    </p>
+    <div class="social-icons">
+    <a href="#" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+    <a href="#" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+    <a href="#" target="_blank"><i class="fa-brands fa-discord"></i></a>
+</div>
+</footer>
 
     <!-- JavaScript -->
     <script src="script.js"></script>
+
+
 </body>
 </html>
