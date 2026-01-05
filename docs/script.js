@@ -1,5 +1,83 @@
 // Mobile menu toggle - FIXED VERSION
 document.addEventListener('DOMContentLoaded', function() {
+    // ===== STAR BACKGROUND GENERATION =====
+    function createStars() {
+        const starsContainer = document.createElement('div');
+        starsContainer.id = 'stars';
+        starsContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        `;
+        document.body.prepend(starsContainer);
+        
+        const starsCount = 200;
+        
+        for (let i = 0; i < starsCount; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            
+            // Random position
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            
+            // Random size (1-3px)
+            const size = Math.random() * 2 + 1;
+            
+            // Random opacity
+            const opacity = Math.random() * 0.7 + 0.3;
+            
+            // Random twinkling (30% of stars)
+            if (Math.random() > 0.7) {
+                star.classList.add('twinkling');
+                star.style.animationDelay = `${Math.random() * 5}s`;
+            }
+            
+            // Set star properties
+            star.style.left = `${x}%`;
+            star.style.top = `${y}%`;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.opacity = opacity;
+            star.style.backgroundColor = `rgba(255, 255, 255, ${opacity})`;
+            star.style.borderRadius = '50%';
+            star.style.position = 'absolute';
+            
+            starsContainer.appendChild(star);
+        }
+        
+        // Add twinkling animation to CSS
+        const twinkleStyle = document.createElement('style');
+        twinkleStyle.textContent = `
+            .twinkling {
+                animation: twinkle 5s infinite;
+            }
+            @keyframes twinkle {
+                0%, 100% { opacity: 0.3; }
+                50% { opacity: 1; }
+            }
+        `;
+        document.head.appendChild(twinkleStyle);
+    }
+    
+    // Optional: Parallax effect on scroll
+    function initParallax() {
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const stars = document.querySelectorAll('.star');
+            
+            stars.forEach(star => {
+                const speed = parseFloat(star.style.width) * 0.3;
+                star.style.transform = `translateY(${scrolled * speed * 0.1}px)`;
+            });
+        });
+    }
+    
+    // ===== ORIGINAL MENU CODE =====
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const navLinks = document.querySelector('.nav-links');
     let isMenuOpen = false;
@@ -53,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Button interactions
+    // ===== ORIGINAL BUTTON INTERACTIONS =====
     const startLearningBtn = document.getElementById('startLearningBtn');
     const exploreBtn = document.getElementById('exploreBtn');
     
@@ -77,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Quiz option interactions
+    // ===== ORIGINAL QUIZ INTERACTIONS =====
     const quizOptions = document.querySelectorAll('.option');
     
     quizOptions.forEach(option => {
@@ -134,8 +212,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
-    // Add CSS animation for fadeIn
+
+    // ===== ORIGINAL CSS ANIMATIONS =====
     const style = document.createElement('style');
     style.textContent = `
         @keyframes fadeIn {
@@ -150,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     document.head.appendChild(style);
     
-    // Update progress animation
+    // ===== ORIGINAL PROGRESS ANIMATION =====
     const progressRing = document.querySelector('.ring');
     let rotation = 0;
     
@@ -158,15 +236,17 @@ document.addEventListener('DOMContentLoaded', function() {
         rotation += 1;
         if (rotation > 360) rotation = 0;
         
-        progressRing.style.borderTop = `8px solid #6a11cb`;
-        progressRing.style.transform = `rotate(${rotation}deg)`;
+        if (progressRing) {
+            progressRing.style.borderTop = `8px solid #6a11cb`;
+            progressRing.style.transform = `rotate(${rotation}deg)`;
+        }
         
         requestAnimationFrame(animateProgress);
     }
     
     animateProgress();
     
-    // Stats counter animation
+    // ===== ORIGINAL STATS COUNTER ANIMATION =====
     const stats = document.querySelectorAll('.stat-item h3');
     stats.forEach(stat => {
         const targetValue = parseInt(stat.textContent);
@@ -184,5 +264,23 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             stat.textContent = Math.floor(currentValue) + (stat.textContent.includes('+') ? '+' : '%');
         }, stepDuration);
+    });
+    
+    // ===== INITIALIZE STAR BACKGROUND =====
+    createStars();
+    initParallax();
+    
+    // Optional: Set body background color for starry effect
+    document.body.style.background = '#0a0c19ff';
+    document.body.style.color = '#e0e0e0';
+    
+    // Optional: Ensure content containers are visible
+    const contentContainers = document.querySelectorAll('.container, .content, .hero, main, section');
+    contentContainers.forEach(container => {
+        if (!container.style.backgroundColor) {
+            container.style.backgroundColor = 'transparent';
+            container.style.position = 'relative';
+            container.style.zIndex = '1';
+        }
     });
 });
