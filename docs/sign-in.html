@@ -2,240 +2,159 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Login</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login / Sign Up</title>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-
 <!-- Font Awesome -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
-* {
-    box-sizing: border-box;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
 body {
-    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 100vh;
-    background: #f6f7f9;
+    overflow: hidden;
+}
+
+.container {
+    width: 350px;
+    background: #f9f9f9;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Forms */
+form {
     display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.card {
-    width: 420px;
-    background: #fff;
-    border-radius: 28px;
-    padding: 40px 36px;
-    box-shadow: 0 0 0 1px #e5e9f0;
-    text-align: center;
-}
-
-.brand {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-weight: 700;
-    font-size: 22px;
-    margin-bottom: 18px;
-}
-
-.brand img {
-    width: 28px;
-    height: 28px;
-}
-
-h1 {
-    margin: 0 0 24px;
-    font-size: 36px;
-    font-weight: 800;
-    color: #0f172a;
-}
-
-.toggle {
-    display: flex;
-    background: #f1f4f9;
-    border-radius: 999px;
-    padding: 6px;
-    margin: 0 auto 26px;
-    width: fit-content;
-}
-
-.toggle button {
-    border: none;
-    background: transparent;
-    padding: 10px 22px;
-    border-radius: 999px;
-    font-weight: 600;
-    cursor: pointer;
-    color: #64748b;
-}
-
-.toggle .active {
-    background: #fff;
-    color: #0f172a;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-}
-
-.auth-btn {
-    width: 100%;
-    padding: 14px;
-    border-radius: 999px;
-    border: 2px solid #e5e9f0;
-    background: #fff;
-    font-size: 16px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    cursor: pointer;
-    color: #0f172a;
-}
-
-.auth-btn + .auth-btn {
-    margin-top: 14px;
-}
-
-.auth-btn.apple {
-    border-color: #e5e9f0;
-}
-
-.divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 26px 0;
-    color: #64748b;
-    font-weight: 600;
-}
-
-.divider::before,
-.divider::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: #e5e9f0;
+    flex-direction: column;
+    gap: 15px;
 }
 
 input {
-    width: 100%;
-    padding: 14px;
-    border-radius: 999px;
-    border: 2px solid #e5e9f0;
-    font-size: 15px;
-    margin-bottom: 12px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 16px;
 }
 
-.hidden {
-    display: none;
+button {
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
+    background: #6366f1;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #4f46e5;
+}
+
+/* Switch forms */
+.toggle {
+    text-align: center;
+    font-size: 14px;
+    color: #555;
+    cursor: pointer;
+}
+
+/* Slide animation */
+.slide-up {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    transition: top 0.5s ease;
+}
+
+.slide-up.active {
+    top: 0;
+}
+
+/* Icons */
+.icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 </style>
 </head>
 <body>
 
-<div class="card">
+<div class="container">
+    <!-- Sign In Form -->
+    <form id="loginForm">
+        <h2 style="text-align:center;">Sign In</h2>
+        <input type="email" id="loginEmail" placeholder="Email" required>
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <button type="submit">Sign In</button>
+        <div class="toggle" id="showSignup">Don't have an account? Sign Up</div>
+    </form>
 
-    <div class="brand">
-        <img src="star-icon.svg" alt="Star">
-        Gizmo
-    </div>
-
-    <h1>Let's get started!</h1>
-
-    <div class="toggle">
-        <button>Sign up</button>
-        <button class="active">Sign in</button>
-    </div>
-
-    <button class="auth-btn apple" onclick="appleLogin()">
-        <i class="fa-brands fa-apple"></i>
-        Sign in with Apple
-    </button>
-
-    <div class="divider">Other options</div>
-
-    <button class="auth-btn" onclick="showEmail()">
-        <i class="fa-regular fa-envelope"></i>
-        Sign in with Email
-    </button>
-
-    <button class="auth-btn" onclick="showPhone()">
-        <i class="fa-solid fa-phone"></i>
-        Sign in with Phone
-    </button>
-
-    <button class="auth-btn" onclick="googleLogin()">
-        <i class="fa-brands fa-google"></i>
-        Sign in with Google
-    </button>
-
-    <!-- Email -->
-    <div id="emailBox" class="hidden">
-        <input id="email" type="email" placeholder="Email">
-        <input id="password" type="password" placeholder="Password">
-        <button class="auth-btn" onclick="emailLogin()">Continue</button>
-    </div>
-
-    <!-- Phone -->
-    <div id="phoneBox" class="hidden">
-        <input id="phone" type="text" placeholder="+45 12345678">
-        <div id="recaptcha"></div>
-        <button class="auth-btn" onclick="phoneLogin()">Continue</button>
-    </div>
-
+    <!-- Sign Up Form -->
+    <form id="signupForm" class="slide-up">
+        <h2 style="text-align:center;">Sign Up</h2>
+        <input type="email" id="signupEmail" placeholder="Email" required>
+        <input type="password" id="signupPassword" placeholder="Password" required>
+        <button type="submit" class="icon-btn"><i class="fa-solid fa-user-plus"></i> Sign Up</button>
+        <div class="toggle" id="showLogin">Already have an account? Sign In</div>
+    </form>
 </div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDjBxNmeQ6IRi8GNwiDE8nQZnlBP_9PiEs",
-  authDomain: "intellecta-bae6d.firebaseapp.com",
-  projectId: "intellecta-bae6d",
-  appId: "1:934037113488:web:cec0e29bb0ab29b6302615"
-};
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+  const loginForm = document.getElementById('loginForm');
+  const signupForm = document.getElementById('signupForm');
+  const showSignup = document.getElementById('showSignup');
+  const showLogin = document.getElementById('showLogin');
 
-function googleLogin() {
-    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-}
+  // Toggle forms
+  showSignup.addEventListener('click', () => signupForm.classList.add('active'));
+  showLogin.addEventListener('click', () => signupForm.classList.remove('active'));
 
-function appleLogin() {
-    auth.signInWithPopup(new firebase.auth.OAuthProvider("apple.com"));
-}
+  // Login
+  loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
 
-function emailLogin() {
-    const e = email.value;
-    const p = password.value;
-    auth.signInWithEmailAndPassword(e, p)
-        .catch(() => auth.createUserWithEmailAndPassword(e, p));
-}
+      auth.signInWithEmailAndPassword(email, password)
+          .then(() => window.location.href = 'https://lukasugianskis.github.io/knowji-web/home')
+          .catch(err => alert(err.message));
+  });
 
-window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha", {
-    size: "invisible"
-});
+  // Sign Up
+  signupForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
 
-function phoneLogin() {
-    auth.signInWithPhoneNumber(phone.value, window.recaptchaVerifier)
-        .then(r => r.confirm(prompt("Enter SMS code")));
-}
-
-function showEmail() {
-    emailBox.classList.toggle("hidden");
-    phoneBox.classList.add("hidden");
-}
-
-function showPhone() {
-    phoneBox.classList.toggle("hidden");
-    emailBox.classList.add("hidden");
-}
+      auth.createUserWithEmailAndPassword(email, password)
+          .then(() => window.location.href = 'https://lukasugianskis.github.io/knowji-web/home')
+          .catch(err => alert(err.message));
+  });
 </script>
-
 </body>
 </html>
