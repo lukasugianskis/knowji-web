@@ -106,6 +106,10 @@ h1 {
     background: #f1f4f9;
 }
 
+.auth-btn.apple {
+    border-color: #e5e9f0;
+}
+
 .divider {
     display: flex;
     align-items: center;
@@ -156,7 +160,7 @@ input {
 
     <div class="brand">
         <img src="webicon.svg" alt="Star">
-        Gizmo
+        Knowji
     </div>
 
     <h1>Let's get started!</h1>
@@ -167,7 +171,7 @@ input {
     </div>
 
     <!-- Email Sign In Button at top -->
-    <button class="auth-btn" onclick="showEmail('signin')">
+    <button class="auth-btn" onclick="showEmail()">
         <i class="fa-regular fa-envelope"></i>
         Sign in with Email
     </button>
@@ -175,9 +179,9 @@ input {
     <div id="signinBtns">
         <div class="divider">Other options</div>
 
-        <button class="auth-btn" onclick="showPhone('signin')">
-            <i class="fa-solid fa-phone"></i>
-            Sign in with Phone
+        <button class="auth-btn apple" onclick="appleLogin()">
+            <i class="fa-brands fa-apple"></i>
+            Sign in with Apple
         </button>
 
         <button class="auth-btn" onclick="googleLogin()">
@@ -191,13 +195,6 @@ input {
         <input id="signinEmail" type="email" placeholder="Email">
         <input id="signinPassword" type="password" placeholder="Password">
         <button class="auth-btn" onclick="emailSignIn()">Continue</button>
-    </div>
-
-    <!-- Sign In Phone Form -->
-    <div id="phoneSignInBox" class="slide-down">
-        <input id="signinPhone" type="text" placeholder="+45 12345678">
-        <div id="recaptchaSignIn"></div>
-        <button class="auth-btn" onclick="phoneSignIn()">Continue</button>
     </div>
 
     <!-- Sign Up Form -->
@@ -237,12 +234,10 @@ const signupTab = document.getElementById('signupTab');
 const signinTab = document.getElementById('signinTab');
 const signupFormDiv = document.getElementById('signupForm');
 const emailSignInDiv = document.getElementById('emailSignInBox');
-const phoneSignInDiv = document.getElementById('phoneSignInBox');
 
 signupTab.addEventListener('click', () => {
     signupFormDiv.classList.add('active');
     emailSignInDiv.classList.remove('active');
-    phoneSignInDiv.classList.remove('active');
     signupTab.classList.add('active');
     signinTab.classList.remove('active');
 });
@@ -254,19 +249,19 @@ signinTab.addEventListener('click', () => {
 });
 
 // Email toggle
-function showEmail(form) {
+function showEmail() {
     emailSignInDiv.classList.toggle('active');
-    phoneSignInDiv.classList.remove('active');
-}
-
-function showPhone(form) {
-    phoneSignInDiv.classList.toggle('active');
-    emailSignInDiv.classList.remove('active');
 }
 
 // Firebase login/signup
 function googleLogin() {
     auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+        .then(() => window.location.href = 'https://lukasugianskis.github.io/knowji-web/home')
+        .catch(e => alert(e.message));
+}
+
+function appleLogin() {
+    auth.signInWithPopup(new firebase.auth.OAuthProvider("apple.com"))
         .then(() => window.location.href = 'https://lukasugianskis.github.io/knowji-web/home')
         .catch(e => alert(e.message));
 }
@@ -287,20 +282,6 @@ function emailSignUp() {
     auth.createUserWithEmailAndPassword(e, p)
         .then(() => window.location.href = 'https://lukasugianskis.github.io/knowji-web/home')
         .catch(err => alert(err.message));
-}
-
-// Phone sign-in
-window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptchaSignIn", { size: "invisible" });
-
-function phoneSignIn() {
-    const phone = document.getElementById('signinPhone').value;
-    auth.signInWithPhoneNumber(phone, window.recaptchaVerifier)
-        .then(confirmationResult => {
-            const code = prompt("Enter SMS code");
-            return confirmationResult.confirm(code);
-        })
-        .then(() => window.location.href = 'https://lukasugianskis.github.io/knowji-web/home')
-        .catch(e => alert(e.message));
 }
 </script>
 
