@@ -14,7 +14,7 @@
 <style>
 * {
     box-sizing: border-box;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: "system-ui", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 body {
@@ -106,10 +106,6 @@ h1 {
     background: #f1f4f9;
 }
 
-.auth-btn.apple {
-    border-color: #e5e9f0;
-}
-
 .divider {
     display: flex;
     align-items: center;
@@ -148,7 +144,7 @@ input {
 }
 
 .slide-down.active {
-    max-height: 500px; /* enough to show the form */
+    max-height: 500px;
     padding-top: 12px;
     padding-bottom: 12px;
 }
@@ -159,7 +155,7 @@ input {
 <div class="card">
 
     <div class="brand">
-        <img src="star-icon.svg" alt="Star">
+        <img src="webicon.svg" alt="Star">
         Gizmo
     </div>
 
@@ -170,19 +166,14 @@ input {
         <button id="signinTab" class="active">Sign in</button>
     </div>
 
-    <!-- Sign In Buttons -->
+    <!-- Email Sign In Button at top -->
+    <button class="auth-btn" onclick="showEmail('signin')">
+        <i class="fa-regular fa-envelope"></i>
+        Sign in with Email
+    </button>
+
     <div id="signinBtns">
-        <button class="auth-btn apple" onclick="appleLogin()">
-            <i class="fa-brands fa-apple"></i>
-            Sign in with Apple
-        </button>
-
         <div class="divider">Other options</div>
-
-        <button class="auth-btn" onclick="showEmail('signin')">
-            <i class="fa-regular fa-envelope"></i>
-            Sign in with Email
-        </button>
 
         <button class="auth-btn" onclick="showPhone('signin')">
             <i class="fa-solid fa-phone"></i>
@@ -234,6 +225,13 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
+// Redirect if already logged in
+auth.onAuthStateChanged(user => {
+    if (user) {
+        window.location.href = 'https://lukasugianskis.github.io/knowji-web/home';
+    }
+});
+
 // Tab toggle
 const signupTab = document.getElementById('signupTab');
 const signinTab = document.getElementById('signinTab');
@@ -273,12 +271,7 @@ function googleLogin() {
         .catch(e => alert(e.message));
 }
 
-function appleLogin() {
-    auth.signInWithPopup(new firebase.auth.OAuthProvider("apple.com"))
-        .then(() => window.location.href = 'https://lukasugianskis.github.io/knowji-web/home')
-        .catch(e => alert(e.message));
-}
-
+// Email Sign In
 function emailSignIn() {
     const e = document.getElementById('signinEmail').value;
     const p = document.getElementById('signinPassword').value;
@@ -287,6 +280,7 @@ function emailSignIn() {
         .catch(err => alert(err.message));
 }
 
+// Email Sign Up
 function emailSignUp() {
     const e = document.getElementById('signupEmail').value;
     const p = document.getElementById('signupPassword').value;

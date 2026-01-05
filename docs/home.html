@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Logout</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+  <button onclick="logout()">Logout</button>
+
+  <script>
+   const firebaseConfig = {
+  apiKey: "AIzaSyC55Q_Udk2c17VwWWFGO3u-TooNMqYhRmw",
+  authDomain: "auth-knowji.firebaseapp.com",
+  projectId: "auth-knowji",
+  storageBucket: "auth-knowji.firebasestorage.app",
+  messagingSenderId: "931262954578",
+  appId: "1:931262954578:web:cdb4e21e82e68eda57738b",
+  measurementId: "G-C7SYLYMZTQ"
+};
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    function logout() {
+      auth.signOut().then(() => {
+        window.location.href = 'LOGIN_PAGE_URL_HERE'; // replace with your login page
+      });
+    }
+  </script>
+</body>
+</html>
