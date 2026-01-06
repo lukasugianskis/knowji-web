@@ -7,7 +7,6 @@
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -15,8 +14,9 @@
 <style>
 * {
     box-sizing: border-box;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: "system-ui", -apple-system, BlinkMacSystemFont, sans-serif;
 }
+
 body {
     margin: 0;
     height: 100vh;
@@ -25,6 +25,7 @@ body {
     align-items: center;
     justify-content: center;
 }
+
 .card {
     width: 420px;
     background: #fff;
@@ -32,7 +33,10 @@ body {
     padding: 40px 36px;
     box-shadow: 0 0 0 1px #e5e9f0;
     text-align: center;
+    position: relative;
+    overflow: hidden;
 }
+
 .brand {
     display: flex;
     align-items: center;
@@ -42,16 +46,19 @@ body {
     font-size: 22px;
     margin-bottom: 18px;
 }
+
 .brand img {
     width: 28px;
     height: 28px;
 }
+
 h1 {
-    margin-bottom: 24px;
+    margin: 0 0 24px;
     font-size: 36px;
     font-weight: 800;
     color: #0f172a;
 }
+
 .toggle {
     display: flex;
     background: #f1f4f9;
@@ -60,6 +67,7 @@ h1 {
     margin: 0 auto 26px;
     width: fit-content;
 }
+
 .toggle button {
     border: none;
     background: transparent;
@@ -68,12 +76,15 @@ h1 {
     font-weight: 600;
     cursor: pointer;
     color: #64748b;
+    transition: 0.3s;
 }
+
 .toggle .active {
     background: #fff;
     color: #0f172a;
     box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
+
 .auth-btn {
     width: 100%;
     padding: 14px;
@@ -87,11 +98,18 @@ h1 {
     justify-content: center;
     gap: 12px;
     cursor: pointer;
+    color: #0f172a;
     margin-bottom: 14px;
 }
+
 .auth-btn:hover {
     background: #f1f4f9;
 }
+
+.auth-btn.apple {
+    border-color: #e5e9f0;
+}
+
 .divider {
     display: flex;
     align-items: center;
@@ -100,6 +118,7 @@ h1 {
     color: #64748b;
     font-weight: 600;
 }
+
 .divider::before,
 .divider::after {
     content: "";
@@ -107,6 +126,7 @@ h1 {
     height: 1px;
     background: #e5e9f0;
 }
+
 input {
     width: 100%;
     padding: 14px;
@@ -115,62 +135,77 @@ input {
     font-size: 15px;
     margin-bottom: 12px;
 }
-.slide {
+
+.hidden {
+    display: none;
+}
+
+/* Smooth slide animation */
+.slide-down {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.5s ease, padding 0.5s ease;
 }
-.slide.active {
+
+.slide-down.active {
     max-height: 500px;
-    padding: 12px 0;
+    padding-top: 12px;
+    padding-bottom: 12px;
 }
 </style>
 </head>
-
 <body>
 
 <div class="card">
 
-<div class="brand">
-    <img src="webicon.svg">
-    Knowji
-</div>
+    <div class="brand">
+        <img src="webicon.svg" alt="Star">
+        Knowji
+    </div>
 
-<h1>Let’s get started</h1>
+    <h1>Let's get started!</h1>
 
-<div class="toggle">
-    <button id="signupTab">Sign up</button>
-    <button id="signinTab" class="active">Sign in</button>
-</div>
+    <div class="toggle">
+        <button id="signupTab">Sign up</button>
+        <button id="signinTab" class="active">Sign in</button>
+    </div>
 
-<button class="auth-btn" onclick="toggleEmail()">
-    <i class="fa-regular fa-envelope"></i>
-    Sign in with Email
-</button>
+    <!-- Email Sign In Button at top -->
+    <button class="auth-btn" onclick="showEmail()">
+        <i class="fa-regular fa-envelope"></i>
+        Sign in with Email
+    </button>
 
-<div class="divider">Other options</div>
+    <div id="signinBtns">
+        <div class="divider">Other options</div>
 
-<button class="auth-btn" onclick="appleLogin()">
-    <i class="fa-brands fa-apple"></i>
-    Sign in with Apple
-</button>
+        <button class="auth-btn apple" onclick="appleLogin()">
+            <i class="fa-brands fa-apple"></i>
+            Sign in with Apple
+        </button>
 
-<button class="auth-btn" onclick="googleLogin()">
-    <i class="fa-brands fa-google"></i>
-    Sign in with Google
-</button>
+        <button class="auth-btn" onclick="googleLogin()">
+            <i class="fa-brands fa-google"></i>
+            Sign in with Google
+        </button>
+    </div>
 
-<div id="emailSignIn" class="slide">
-    <input id="signinEmail" placeholder="Email">
-    <input id="signinPassword" type="password" placeholder="Password">
-    <button class="auth-btn" onclick="emailSignIn()">Continue</button>
-</div>
+    <!-- Sign In Email Form -->
+    <div id="emailSignInBox" class="slide-down">
+        <input id="signinEmail" type="email" placeholder="Email">
+        <input id="signinPassword" type="password" placeholder="Password">
+        <button class="auth-btn" onclick="emailSignIn()">Continue</button>
+    </div>
 
-<div id="signupForm" class="slide">
-    <input id="signupEmail" placeholder="Email">
-    <input id="signupPassword" type="password" placeholder="Password">
-    <button class="auth-btn" onclick="emailSignUp()">Create account</button>
-</div>
+    <!-- Sign Up Form -->
+    <div id="signupForm" class="slide-down">
+        <input id="signupEmail" type="email" placeholder="Email">
+        <input id="signupPassword" type="password" placeholder="Password">
+        <button class="auth-btn" onclick="emailSignUp()">
+            <i class="fa-solid fa-user-plus"></i>
+            Sign Up
+        </button>
+    </div>
 
 </div>
 
@@ -179,78 +214,76 @@ const firebaseConfig = {
   apiKey: "AIzaSyC55Q_Udk2c17VwWWFGO3u-TooNMqYhRmw",
   authDomain: "auth-knowji.firebaseapp.com",
   projectId: "auth-knowji",
+  storageBucket: "auth-knowji.firebasestorage.app",
+  messagingSenderId: "931262954578",
+  appId: "1:931262954578:web:cdb4e21e82e68eda57738b",
+  measurementId: "G-C7SYLYMZTQ"
 };
 firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
-const db = firebase.firestore();
 
-/* AUTH STATE (ONBOARDING CHECK) */
-auth.onAuthStateChanged(async user => {
-  if (!user) return;
+const app = document.getElementById('app');
 
-  const ref = db.collection("users").doc(user.uid);
-  const snap = await ref.get();
-
-  if (!snap.exists) {
-    await ref.set({
-      onboardingComplete: false,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-  }
-
-  if (!snap.exists || snap.data().onboardingComplete === false) {
-    window.location.href = "onboarding.html";
+auth.onAuthStateChanged(user => {
+  if (user) {
+    window.location.href = '/knowji-web/home';
   } else {
-    window.location.href = "home";
+    app.style.display = 'block';
   }
 });
+// Tab toggle
+const signupTab = document.getElementById('signupTab');
+const signinTab = document.getElementById('signinTab');
+const signupFormDiv = document.getElementById('signupForm');
+const emailSignInDiv = document.getElementById('emailSignInBox');
 
-/* UI */
-const emailBox = document.getElementById("emailSignIn");
-const signupBox = document.getElementById("signupForm");
-const signupTab = document.getElementById("signupTab");
-const signinTab = document.getElementById("signinTab");
+signupTab.addEventListener('click', () => {
+    signupFormDiv.classList.add('active');
+    emailSignInDiv.classList.remove('active');
+    signupTab.classList.add('active');
+    signinTab.classList.remove('active');
+});
 
-function toggleEmail() {
-  emailBox.classList.toggle("active");
-  signupBox.classList.remove("active");
+signinTab.addEventListener('click', () => {
+    signupFormDiv.classList.remove('active');
+    signupTab.classList.remove('active');
+    signinTab.classList.add('active');
+});
+
+// Email toggle
+function showEmail() {
+    emailSignInDiv.classList.toggle('active');
 }
 
-signupTab.onclick = () => {
-  signupBox.classList.add("active");
-  emailBox.classList.remove("active");
-  signupTab.classList.add("active");
-  signinTab.classList.remove("active");
-};
-
-signinTab.onclick = () => {
-  signupBox.classList.remove("active");
-  signupTab.classList.remove("active");
-  signinTab.classList.add("active");
-};
-
-/* AUTH */
+// Firebase login/signup
 function googleLogin() {
-  auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+        .then(() => window.location.href = 'https://lukasugianskis.github.io/knowji-web/onboarding')
+        .catch(e => alert(e.message));
 }
 
 function appleLogin() {
-  auth.signInWithPopup(new firebase.auth.OAuthProvider("apple.com"));
+    auth.signInWithPopup(new firebase.auth.OAuthProvider("apple.com"))
+        .then(() => window.location.href = 'https://lukasugianskis.github.io/knowji-web/onboarding')
+        .catch(e => alert(e.message));
 }
 
+// Email Sign In
 function emailSignIn() {
-  auth.signInWithEmailAndPassword(
-    signinEmail.value,
-    signinPassword.value
-  );
+    const e = document.getElementById('signinEmail').value;
+    const p = document.getElementById('signinPassword').value;
+    auth.signInWithEmailAndPassword(e, p)
+        .then(() => window.location.href = 'https://lukasugianskis.github.io/knowji-web/onboarding')
+        .catch(err => alert(err.message));
 }
 
+// Email Sign Up
 function emailSignUp() {
-  auth.createUserWithEmailAndPassword(
-    signupEmail.value,
-    signupPassword.value
-  );
+    const e = document.getElementById('signupEmail').value;
+    const p = document.getElementById('signupPassword').value;
+    auth.createUserWithEmailAndPassword(e, p)
+        .then(() => window.location.href = 'https://lukasugianskis.github.io/knowji-web/onboarding')
+        .catch(err => alert(err.message));
 }
 </script>
 
