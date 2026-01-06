@@ -7,6 +7,7 @@
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -14,7 +15,7 @@
 <style>
 * {
     box-sizing: border-box;
-    font-family: "system-ui", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 body {
@@ -33,8 +34,6 @@ body {
     padding: 40px 36px;
     box-shadow: 0 0 0 1px #e5e9f0;
     text-align: center;
-    position: relative;
-    overflow: hidden;
 }
 
 .brand {
@@ -49,11 +48,10 @@ body {
 
 .brand img {
     width: 28px;
-    height: 28px;
 }
 
 h1 {
-    margin: 0 0 24px;
+    margin-bottom: 24px;
     font-size: 36px;
     font-weight: 800;
     color: #0f172a;
@@ -76,7 +74,6 @@ h1 {
     font-weight: 600;
     cursor: pointer;
     color: #64748b;
-    transition: 0.3s;
 }
 
 .toggle .active {
@@ -98,16 +95,11 @@ h1 {
     justify-content: center;
     gap: 12px;
     cursor: pointer;
-    color: #0f172a;
     margin-bottom: 14px;
 }
 
 .auth-btn:hover {
     background: #f1f4f9;
-}
-
-.auth-btn.apple {
-    border-color: #e5e9f0;
 }
 
 .divider {
@@ -136,76 +128,67 @@ input {
     margin-bottom: 12px;
 }
 
-.hidden {
-    display: none;
-}
-
 /* Smooth slide animation */
-.slide-down {
+.slide {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.5s ease, padding 0.5s ease;
+    opacity: 0;
+    transition: max-height 0.5s ease, opacity 0.5s ease, padding 0.5s ease;
+    padding: 0 0;
 }
 
-.slide-down.active {
+.slide.active {
     max-height: 500px;
-    padding-top: 12px;
-    padding-bottom: 12px;
+    opacity: 1;
+    padding: 12px 0;
 }
 </style>
 </head>
+
 <body>
 
 <div class="card">
 
-    <div class="brand">
-        <img src="webicon.svg" alt="Star">
-        Knowji
-    </div>
+<div class="brand">
+    <img src="webicon.svg">
+    Knowji
+</div>
 
-    <h1>Let's get started!</h1>
+<h1>Let’s get started</h1>
 
-    <div class="toggle">
-        <button id="signupTab">Sign up</button>
-        <button id="signinTab" class="active">Sign in</button>
-    </div>
+<div class="toggle">
+    <button id="signupTab">Sign up</button>
+    <button id="signinTab" class="active">Sign in</button>
+</div>
 
-    <!-- Email Sign In Button at top -->
-    <button class="auth-btn" onclick="showEmail()">
-        <i class="fa-regular fa-envelope"></i>
-        Sign in with Email
-    </button>
+<button class="auth-btn" onclick="toggleEmail()">
+    <i class="fa-regular fa-envelope"></i>
+    Sign in with Email
+</button>
 
-    <div id="signinBtns">
-        <div class="divider">Other options</div>
+<div class="divider">Other options</div>
 
-        <button class="auth-btn apple" onclick="appleLogin()">
-            <i class="fa-brands fa-apple"></i>
-            Sign in with Apple
-        </button>
+<button class="auth-btn" onclick="appleLogin()">
+    <i class="fa-brands fa-apple"></i>
+    Sign in with Apple
+</button>
 
-        <button class="auth-btn" onclick="googleLogin()">
-            <i class="fa-brands fa-google"></i>
-            Sign in with Google
-        </button>
-    </div>
+<button class="auth-btn" onclick="googleLogin()">
+    <i class="fa-brands fa-google"></i>
+    Sign in with Google
+</button>
 
-    <!-- Sign In Email Form -->
-    <div id="emailSignInBox" class="slide-down">
-        <input id="signinEmail" type="email" placeholder="Email">
-        <input id="signinPassword" type="password" placeholder="Password">
-        <button class="auth-btn" onclick="emailSignIn()">Continue</button>
-    </div>
+<div id="emailSignIn" class="slide">
+    <input id="signinEmail" placeholder="Email">
+    <input id="signinPassword" type="password" placeholder="Password">
+    <button class="auth-btn" onclick="emailSignIn()">Continue</button>
+</div>
 
-    <!-- Sign Up Form -->
-    <div id="signupForm" class="slide-down">
-        <input id="signupEmail" type="email" placeholder="Email">
-        <input id="signupPassword" type="password" placeholder="Password">
-        <button class="auth-btn" onclick="emailSignUp()">
-            <i class="fa-solid fa-user-plus"></i>
-            Sign Up
-        </button>
-    </div>
+<div id="signupForm" class="slide">
+    <input id="signupEmail" placeholder="Email">
+    <input id="signupPassword" type="password" placeholder="Password">
+    <button class="auth-btn" onclick="emailSignUp()">Create account</button>
+</div>
 
 </div>
 
@@ -214,78 +197,70 @@ const firebaseConfig = {
   apiKey: "AIzaSyC55Q_Udk2c17VwWWFGO3u-TooNMqYhRmw",
   authDomain: "auth-knowji.firebaseapp.com",
   projectId: "auth-knowji",
-  storageBucket: "auth-knowji.firebasestorage.app",
-  messagingSenderId: "931262954578",
-  appId: "1:931262954578:web:cdb4e21e82e68eda57738b",
-  measurementId: "G-C7SYLYMZTQ"
 };
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
+const db = firebase.firestore();
 
-// Redirect if already logged in
-document.body.style.display = 'none';
+/* AUTH STATE */
+auth.onAuthStateChanged(async user => {
+  if (!user) return;
 
-auth.onAuthStateChanged(user => {
-    if (user) {
-        window.location.href = '/knowji-web/home';
-    } else {
-        document.body.style.display = 'block';
-    }
+  const doc = await db.collection("users").doc(user.uid).get();
+
+  if (!doc.exists || !doc.data().onboardingComplete) {
+    window.location.href = "onboarding.html";
+  } else {
+    window.location.href = "home";
+  }
 });
 
-// Tab toggle
-const signupTab = document.getElementById('signupTab');
-const signinTab = document.getElementById('signinTab');
-const signupFormDiv = document.getElementById('signupForm');
-const emailSignInDiv = document.getElementById('emailSignInBox');
+/* UI */
+const emailBox = document.getElementById("emailSignIn");
+const signupBox = document.getElementById("signupForm");
+const signupTab = document.getElementById("signupTab");
+const signinTab = document.getElementById("signinTab");
 
-signupTab.addEventListener('click', () => {
-    signupFormDiv.classList.add('active');
-    emailSignInDiv.classList.remove('active');
-    signupTab.classList.add('active');
-    signinTab.classList.remove('active');
-});
-
-signinTab.addEventListener('click', () => {
-    signupFormDiv.classList.remove('active');
-    signupTab.classList.remove('active');
-    signinTab.classList.add('active');
-});
-
-// Email toggle
-function showEmail() {
-    emailSignInDiv.classList.toggle('active');
+function toggleEmail() {
+  emailBox.classList.toggle("active");
+  signupBox.classList.remove("active");
 }
 
-// Firebase login/signup
+signupTab.onclick = () => {
+  signupBox.classList.add("active");
+  emailBox.classList.remove("active");
+  signupTab.classList.add("active");
+  signinTab.classList.remove("active");
+};
+
+signinTab.onclick = () => {
+  signupBox.classList.remove("active");
+  signupTab.classList.remove("active");
+  signinTab.classList.add("active");
+};
+
+/* AUTH */
 function googleLogin() {
-    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-        .then(() => window.location.href = 'https://lukasugianskis.github.io/knowji-web/home')
-        .catch(e => alert(e.message));
+  auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
 }
 
 function appleLogin() {
-    auth.signInWithPopup(new firebase.auth.OAuthProvider("apple.com"))
-        .then(() => window.location.href = 'https://lukasugianskis.github.io/knowji-web/home')
-        .catch(e => alert(e.message));
+  auth.signInWithPopup(new firebase.auth.OAuthProvider("apple.com"));
 }
 
-// Email Sign In
 function emailSignIn() {
-    const e = document.getElementById('signinEmail').value;
-    const p = document.getElementById('signinPassword').value;
-    auth.signInWithEmailAndPassword(e, p)
-        .then(() => window.location.href = 'https://lukasugianskis.github.io/knowji-web/home')
-        .catch(err => alert(err.message));
+  auth.signInWithEmailAndPassword(
+    signinEmail.value,
+    signinPassword.value
+  );
 }
 
-// Email Sign Up
 function emailSignUp() {
-    const e = document.getElementById('signupEmail').value;
-    const p = document.getElementById('signupPassword').value;
-    auth.createUserWithEmailAndPassword(e, p)
-        .then(() => window.location.href = 'https://lukasugianskis.github.io/knowji-web/home')
-        .catch(err => alert(err.message));
+  auth.createUserWithEmailAndPassword(
+    signupEmail.value,
+    signupPassword.value
+  );
 }
 </script>
 

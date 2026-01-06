@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Onboarding</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  background: #f6f7f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  width: 420px;
+  background: #fff;
+  border-radius: 28px;
+  padding: 40px 36px;
+  box-shadow: 0 0 0 1px #e5e9f0;
+}
+
+.progress {
+  height: 4px;
+  background: #e5e9f0;
+  border-radius: 2px;
+  margin-bottom: 30px;
+}
+
+.bar {
+  height: 100%;
+  width: 0%;
+  background: #0f172a;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+h2 {
+  margin: 0 0 20px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 999px;
+  border: 2px solid #e5e9f0;
+  font-size: 16px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+button {
+  border: none;
+  background: none;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.next {
+  background: #0f172a;
+  color: white;
+  padding: 12px 22px;
+  border-radius: 999px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <h2 id="title"></h2>
+  <input id="input" placeholder="">
+  <div class="buttons">
+    <button onclick="skip()">Skip</button>
+    <button class="next" onclick="next()">Next</button>
+  </div>
+</div>
+
+<script>
+/* Firebase */
+const firebaseConfig = {
+  apiKey: "AIzaSyC55Q_Udk2c17VwWWFGO3u-TooNMqYhRmw",
+  authDomain: "auth-knowji.firebaseapp.com",
+  projectId: "auth-knowji"
+};
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* Steps */
+let step = 0;
+const data = {};
+
+const steps = [
+  { title: "What’s your name?", key: "name", placeholder: "Your name" },
+  { title: "How old are you?", key: "age", placeholder: "Age" },
+  { title: "What subjects do you take?", key: "subjects", placeholder: "Math, Chemistry" }
+];
+
+const title = document.getElementById("title");
+const input = document.getElementById("input");
+const bar = document.getElementById("bar");
+
+function render() {
+  title.innerText = steps[step].title;
+  input.placeholder = steps[step].placeholder;
+  input.value = "";
+  bar.style.width = `${(step / steps.length) * 100}%`;
+}
+
+render();
+
+/* Navigation */
+function next() {
+  if (input.value.trim()) {
+    data[steps[step].key] = input.value.trim();
+  }
+  step++;
+  step < steps.length ? render() : finish();
+}
+
+function skip() {
+  step++;
+  step < steps.length ? render() : finish();
+}
+
+/* Save */
+async function finish() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  await db.collection("users").doc(user.uid).set({
+    ...data,
+    onboardingComplete: true
+  });
+
+  window.location.href = "home";
+}
+
+/* Protect page */
+auth.onAuthStateChanged(user => {
+  if (!user) window.location.href = "sign-in.html";
+});
+</script>
+
+</body>
+</html>
