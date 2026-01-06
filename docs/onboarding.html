@@ -211,21 +211,33 @@ async function checkUsername() {
 
 /* Navigation */
 async function next() {
+  if (step >= steps.length) return;
+
+  const currentStep = steps[step];
   const val = input.value.trim();
 
   if (val) {
-    if (steps[step].key === "username") {
+    if (currentStep.key === "username") {
       if (!/^[a-zA-Z0-9.-]+$/.test(val)) return;
-      const taken = await db.collection("users")
+
+      const taken = await db
+        .collection("users")
         .where("username", "==", val)
         .get();
+
       if (!taken.empty) return;
     }
-    data[steps[step].key] = val;
+
+    data[currentStep.key] = val;
   }
 
   step++;
-  step < steps.length ? render() : finish();
+
+  if (step < steps.length) {
+    render();
+  } else {
+    finish();
+  }
 }
 
 function skip() {
