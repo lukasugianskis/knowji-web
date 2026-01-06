@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initParallax();
     
     // Optional: Set body background color for starry effect
-    document.body.style.background = '#0a0c19ff';
+    document.body.style.background = '#000415ff';
     document.body.style.color = '#e0e0e0';
     
     // Optional: Ensure content containers are visible

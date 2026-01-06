@@ -20,7 +20,7 @@ body {
         #01031a 0%,
         #01010e 25%,
         #050114 50%,
-        #010211 100%);
+        #010211);
     position: relative;
     overflow-x: hidden;
     color: #e0e0e0; /* Light text color for contrast */

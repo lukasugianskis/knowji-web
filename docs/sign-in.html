@@ -223,9 +223,13 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
 // Redirect if already logged in
+document.body.style.display = 'none';
+
 auth.onAuthStateChanged(user => {
     if (user) {
-        window.location.href = 'https://lukasugianskis.github.io/knowji-web/home';
+        window.location.href = '/knowji-web/home';
+    } else {
+        document.body.style.display = 'block';
     }
 });
 
