@@ -9,6 +9,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
+<!-- Confetti -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <style>
 * {
   box-sizing: border-box;
@@ -30,6 +33,7 @@ body {
   border-radius: 28px;
   padding: 40px 36px;
   box-shadow: 0 0 0 1px #e5e9f0;
+  text-align: center;
 }
 
 .progress {
@@ -54,12 +58,18 @@ h2 {
   color: #0f172a;
 }
 
-input {
+input, select {
   width: 100%;
   padding: 14px;
   border-radius: 999px;
   border: 2px solid #e5e9f0;
   font-size: 16px;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 14px;
+  margin-top: 10px;
 }
 
 .buttons {
@@ -87,10 +97,11 @@ button {
 
 <body>
 
-<div class="card">
+<div class="card" id="card">
   <div class="progress"><div class="bar" id="bar"></div></div>
   <h2 id="title"></h2>
-  <input id="input" placeholder="">
+  <div id="field"></div>
+  <div class="error" id="error"></div>
   <div class="buttons">
     <button onclick="skip()">Skip</button>
     <button class="next" onclick="next()">Next</button>
@@ -99,12 +110,11 @@ button {
 
 <script>
 /* Firebase */
-const firebaseConfig = {
+firebase.initializeApp({
   apiKey: "AIzaSyC55Q_Udk2c17VwWWFGO3u-TooNMqYhRmw",
   authDomain: "auth-knowji.firebaseapp.com",
   projectId: "auth-knowji"
-};
-firebase.initializeApp(firebaseConfig);
+});
 
 const auth = firebase.auth();
 const db = firebase.firestore();
@@ -113,30 +123,73 @@ const db = firebase.firestore();
 let step = 0;
 const data = {};
 
+const subjects = [
+  "Mathematics","English","Biology","Chemistry","Physics",
+  "Computer Science","Economics","Business","Geography","History",
+  "French","Spanish","German","Design & Technology","Art",
+  "Music","PE","Psychology","Sociology","ICT"
+];
+
 const steps = [
-  { title: "What’s your name?", key: "name", placeholder: "Your name" },
-  { title: "How old are you?", key: "age", placeholder: "Age" },
-  { title: "What subjects do you take?", key: "subjects", placeholder: "Math, Chemistry" }
+  { key: "username", title: "Choose a username" },
+  { key: "age", title: "How old are you?" },
+  { key: "subjects", title: "Main subject" }
 ];
 
 const title = document.getElementById("title");
-const input = document.getElementById("input");
+const field = document.getElementById("field");
 const bar = document.getElementById("bar");
+const error = document.getElementById("error");
 
 function render() {
-  title.innerText = steps[step].title;
-  input.placeholder = steps[step].placeholder;
-  input.value = "";
+  error.innerText = "";
   bar.style.width = `${(step / steps.length) * 100}%`;
+  title.innerText = steps[step].title;
+  field.innerHTML = "";
+
+  if (steps[step].key === "username") {
+    field.innerHTML = `<input id="input" placeholder="username">`;
+  }
+
+  if (steps[step].key === "age") {
+    field.innerHTML = `<input id="input" type="number" placeholder="Age">`;
+  }
+
+  if (steps[step].key === "subjects") {
+    field.innerHTML = `
+      <select id="input">
+        ${subjects.map(s => `<option value="${s}">${s}</option>`).join("")}
+      </select>`;
+  }
 }
 
 render();
 
 /* Navigation */
-function next() {
-  if (input.value.trim()) {
-    data[steps[step].key] = input.value.trim();
+async function next() {
+  const input = document.getElementById("input");
+  if (!input) return;
+
+  const value = input.value.trim();
+  if (!value) return skip();
+
+  if (steps[step].key === "username") {
+    if (!/^[a-zA-Z0-9.-]+$/.test(value)) {
+      error.innerText = "Only letters, numbers, . or - allowed";
+      return;
+    }
+
+    const taken = await db.collection("users")
+      .where("username", "==", value)
+      .get();
+
+    if (!taken.empty) {
+      error.innerText = "Username already taken";
+      return;
+    }
   }
+
+  data[steps[step].key] = value;
   step++;
   step < steps.length ? render() : finish();
 }
@@ -146,7 +199,7 @@ function skip() {
   step < steps.length ? render() : finish();
 }
 
-/* Save */
+/* Finish */
 async function finish() {
   const user = auth.currentUser;
   if (!user) return;
@@ -156,10 +209,19 @@ async function finish() {
     onboardingComplete: true
   });
 
-  window.location.href = "home";
+  confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+
+  document.getElementById("card").innerHTML = `
+    <h2>🎉 Congrats!</h2>
+    <p>Your account is ready</p>
+  `;
+
+  setTimeout(() => {
+    window.location.href = "/home";
+  }, 1800);
 }
 
-/* Protect page */
+/* Protect */
 auth.onAuthStateChanged(user => {
   if (!user) window.location.href = "sign-in.html";
 });
