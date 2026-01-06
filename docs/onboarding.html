@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Onboarding</title>
+<title>Knowji</title>
+
+ <link rel="icon" href="favicon.png" type="image/png">
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -140,7 +142,7 @@ let step = 0;
 const data = {};
 
 const steps = [
-  { title: "Choose a username", key: "username", placeholder: "username" },
+  { title: "Choose a username", key: "username", placeholder: "@username" },
   { title: "How old are you?", key: "age", placeholder: "Age" },
   { title: "What subjects do you take?", key: "subjects", placeholder: "Math, Chemistry" }
 ];
@@ -233,20 +235,24 @@ function skip() {
 
 /* Enter key support */
 document.addEventListener("keydown", e => {
-  if (e.key === "Enter") next();
+  if (e.key === "Enter" && step < steps.length) {
+    e.preventDefault();
+    next();
+  }
 });
 
 /* Finish */
-async function finish() {
-  const user = auth.currentUser;
-  if (!user) return;
+function finish() {
+  auth.onAuthStateChanged(async user => {
+    if (!user) return;
 
-  await db.collection("users").doc(user.uid).set({
-    ...data,
-    onboardingComplete: true
+    await db.collection("users").doc(user.uid).set({
+      ...data,
+      onboardingComplete: true
+    });
+
+    window.location.href = "home.html";
   });
-
-  window.location.href = "home.html";
 }
 
 /* Protect */
