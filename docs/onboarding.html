@@ -9,9 +9,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-<!-- Confetti -->
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
 <style>
 * {
   box-sizing: border-box;
@@ -33,7 +30,7 @@ body {
   border-radius: 28px;
   padding: 40px 36px;
   box-shadow: 0 0 0 1px #e5e9f0;
-  text-align: center;
+  overflow: hidden;
 }
 
 .progress {
@@ -58,7 +55,22 @@ h2 {
   color: #0f172a;
 }
 
-input, select {
+.step {
+  animation: slideIn 0.35s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+input {
   width: 100%;
   padding: 14px;
   border-radius: 999px;
@@ -66,11 +78,13 @@ input, select {
   font-size: 16px;
 }
 
-.error {
-  color: #dc2626;
+.status {
   font-size: 14px;
   margin-top: 10px;
 }
+
+.status.ok { color: #16a34a; }
+.status.err { color: #dc2626; }
 
 .buttons {
   display: flex;
@@ -97,11 +111,13 @@ button {
 
 <body>
 
-<div class="card" id="card">
+<div class="card">
   <div class="progress"><div class="bar" id="bar"></div></div>
-  <h2 id="title"></h2>
-  <div id="field"></div>
-  <div class="error" id="error"></div>
+  <div id="content" class="step">
+    <h2 id="title"></h2>
+    <input id="input">
+    <div id="status" class="status"></div>
+  </div>
   <div class="buttons">
     <button onclick="skip()">Skip</button>
     <button class="next" onclick="next()">Next</button>
@@ -123,73 +139,89 @@ const db = firebase.firestore();
 let step = 0;
 const data = {};
 
-const subjects = [
-  "Mathematics","English","Biology","Chemistry","Physics",
-  "Computer Science","Economics","Business","Geography","History",
-  "French","Spanish","German","Design & Technology","Art",
-  "Music","PE","Psychology","Sociology","ICT"
-];
-
 const steps = [
-  { key: "username", title: "Choose a username" },
-  { key: "age", title: "How old are you?" },
-  { key: "subjects", title: "Main subject" }
+  { title: "Choose a username", key: "username", placeholder: "username" },
+  { title: "How old are you?", key: "age", placeholder: "Age" },
+  { title: "What subjects do you take?", key: "subjects", placeholder: "Math, Chemistry" }
 ];
 
 const title = document.getElementById("title");
-const field = document.getElementById("field");
+const input = document.getElementById("input");
 const bar = document.getElementById("bar");
-const error = document.getElementById("error");
+const status = document.getElementById("status");
+const content = document.getElementById("content");
 
 function render() {
-  error.innerText = "";
+  content.classList.remove("step");
+  void content.offsetWidth;
+  content.classList.add("step");
+
+  const s = steps[step];
+  title.innerText = s.title;
+  input.placeholder = s.placeholder;
+  input.value = "";
+  status.innerText = "";
+  status.className = "status";
+
   bar.style.width = `${(step / steps.length) * 100}%`;
-  title.innerText = steps[step].title;
-  field.innerHTML = "";
 
-  if (steps[step].key === "username") {
-    field.innerHTML = `<input id="input" placeholder="username">`;
-  }
+  input.focus();
 
-  if (steps[step].key === "age") {
-    field.innerHTML = `<input id="input" type="number" placeholder="Age">`;
-  }
-
-  if (steps[step].key === "subjects") {
-    field.innerHTML = `
-      <select id="input">
-        ${subjects.map(s => `<option value="${s}">${s}</option>`).join("")}
-      </select>`;
-  }
+  input.oninput = s.key === "username" ? checkUsername : null;
 }
 
 render();
 
-/* Navigation */
-async function next() {
-  const input = document.getElementById("input");
-  if (!input) return;
+/* Username live check */
+let usernameTimeout;
+async function checkUsername() {
+  clearTimeout(usernameTimeout);
+  const val = input.value.trim();
 
-  const value = input.value.trim();
-  if (!value) return skip();
-
-  if (steps[step].key === "username") {
-    if (!/^[a-zA-Z0-9.-]+$/.test(value)) {
-      error.innerText = "Only letters, numbers, . or - allowed";
-      return;
-    }
-
-    const taken = await db.collection("users")
-      .where("username", "==", value)
-      .get();
-
-    if (!taken.empty) {
-      error.innerText = "Username already taken";
-      return;
-    }
+  if (!/^[a-zA-Z0-9.-]*$/.test(val)) {
+    status.innerText = "Only letters, numbers, . or -";
+    status.className = "status err";
+    return;
   }
 
-  data[steps[step].key] = value;
+  if (!val) {
+    status.innerText = "";
+    return;
+  }
+
+  status.innerText = "Checking...";
+  status.className = "status";
+
+  usernameTimeout = setTimeout(async () => {
+    const snap = await db.collection("users")
+      .where("username", "==", val)
+      .get();
+
+    if (snap.empty) {
+      status.innerText = "Username available";
+      status.className = "status ok";
+    } else {
+      status.innerText = "Username taken";
+      status.className = "status err";
+    }
+  }, 400);
+}
+
+/* Navigation */
+async function next() {
+  const val = input.value.trim();
+
+  if (val) {
+    if (steps[step].key === "username") {
+      if (!/^[a-zA-Z0-9.-]+$/.test(val)) return;
+      const taken = await db.collection("users")
+        .where("username", "==", val)
+        .get();
+      if (!taken.empty) return;
+    }
+    data[steps[step].key] = val;
+  }
+
   step++;
   step < steps.length ? render() : finish();
 }
@@ -198,6 +230,11 @@ function skip() {
   step++;
   step < steps.length ? render() : finish();
 }
+
+/* Enter key support */
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter") next();
+});
 
 /* Finish */
 async function finish() {
@@ -209,16 +246,7 @@ async function finish() {
     onboardingComplete: true
   });
 
-  confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-
-  document.getElementById("card").innerHTML = `
-    <h2>🎉 Congrats!</h2>
-    <p>Your account is ready</p>
-  `;
-
-  setTimeout(() => {
-    window.location.href = "/home";
-  }, 1800);
+  window.location.href = "/home";
 }
 
 /* Protect */
