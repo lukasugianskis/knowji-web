@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Knowji</title>
 
- <link rel="icon" href="favicon.png" type="image/png">
+<link rel="icon" href="favicon.png" type="image/png">
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -108,6 +108,21 @@ button {
   padding: 12px 22px;
   border-radius: 999px;
 }
+
+/* Loading */
+.loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 4px solid #e5e9f0;
+  border-top: 4px solid #0f172a;
+  border-radius: 50%;
+  margin: 20px auto 0;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 </style>
 </head>
 
@@ -115,11 +130,18 @@ button {
 
 <div class="card">
   <div class="progress"><div class="bar" id="bar"></div></div>
+
   <div id="content" class="step">
     <h2 id="title"></h2>
     <input id="input">
     <div id="status" class="status"></div>
   </div>
+
+  <div id="loading" style="display:none; text-align:center;">
+    <h2>Preparing your account…</h2>
+    <div class="loading-spinner"></div>
+  </div>
+
   <div class="buttons">
     <button onclick="skip()">Skip</button>
     <button class="next" onclick="next()">Next</button>
@@ -152,6 +174,8 @@ const input = document.getElementById("input");
 const bar = document.getElementById("bar");
 const status = document.getElementById("status");
 const content = document.getElementById("content");
+const loading = document.getElementById("loading");
+const buttons = document.querySelector(".buttons");
 
 function render() {
   content.classList.remove("step");
@@ -168,26 +192,20 @@ function render() {
   bar.style.width = `${(step / steps.length) * 100}%`;
 
   input.focus();
-
   input.oninput = s.key === "username" ? checkUsername : null;
 }
 
 render();
 
 /* Username live check */
-/* Username live check */
 let usernameTimeout;
 async function checkUsername() {
   clearTimeout(usernameTimeout);
   let val = input.value.trim();
 
-  // Automatically add @ at the start
   if (val && val[0] !== "@") val = "@" + val;
-
-  // Update input display
   input.value = val;
 
-  // Validation
   if (!/^@[a-zA-Z0-9.-]+$/.test(val)) {
     status.innerText = "Only letters, numbers, . or - after @";
     status.className = "status err";
@@ -231,16 +249,10 @@ async function next() {
   let val = input.value.trim();
 
   if (currentStep.key === "username") {
-    // Ensure starts with @
     if (!val.startsWith("@")) val = "@" + val;
-
-    // Check ends with valid char
     if (val.endsWith(".") || val.endsWith("-")) return;
-
-    // Check only valid characters
     if (!/^@[a-zA-Z0-9.-]+$/.test(val)) return;
 
-    // Check taken
     const taken = await db
       .collection("users")
       .where("username", "==", val)
@@ -248,7 +260,8 @@ async function next() {
     if (!taken.empty) return;
 
     data[currentStep.key] = val;
-  } else if (currentStep.key === "age") {
+  } 
+  else if (currentStep.key === "age") {
     const ageNum = parseInt(val);
     if (isNaN(ageNum) || ageNum < 13) {
       status.innerText = "You must be at least 13";
@@ -256,7 +269,8 @@ async function next() {
       return;
     }
     data[currentStep.key] = ageNum;
-  } else {
+  } 
+  else {
     data[currentStep.key] = val;
   }
 
@@ -264,7 +278,7 @@ async function next() {
   step < steps.length ? render() : finish();
 }
 
-/* Enter key support */
+/* Enter key */
 document.addEventListener("keydown", e => {
   if (e.key === "Enter" && step < steps.length) {
     e.preventDefault();
@@ -272,8 +286,13 @@ document.addEventListener("keydown", e => {
   }
 });
 
-/* Finish */
+/* Finish with loading */
 function finish() {
+  content.style.display = "none";
+  buttons.style.display = "none";
+  bar.style.width = "100%";
+  loading.style.display = "block";
+
   auth.onAuthStateChanged(async user => {
     if (!user) return;
 
@@ -282,7 +301,9 @@ function finish() {
       onboardingComplete: true
     });
 
-    window.location.href = "home.html";
+    setTimeout(() => {
+      window.location.href = "home.html";
+    }, 3000);
   });
 }
 
