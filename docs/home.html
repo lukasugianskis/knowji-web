@@ -2,30 +2,67 @@
 <html>
 <head>
     <link rel="icon" href="favicon.png" type="image/png">
-  <title>Logout</title>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <title>Account Settings</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <button onclick="logout()">Logout</button>
+  <button onclick="deleteAccount()" style="margin-left: 10px; color: white; background: red; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">Delete Account</button>
 
   <script>
-   const firebaseConfig = {
-  apiKey: "AIzaSyC55Q_Udk2c17VwWWFGO3u-TooNMqYhRmw",
-  authDomain: "auth-knowji.firebaseapp.com",
-  projectId: "auth-knowji",
-  storageBucket: "auth-knowji.firebasestorage.app",
-  messagingSenderId: "931262954578",
-  appId: "1:931262954578:web:cdb4e21e82e68eda57738b",
-  measurementId: "G-C7SYLYMZTQ"
-};
+    // Firebase Init
+    const firebaseConfig = {
+      apiKey: "AIzaSyC55Q_Udk2c17VwWWFGO3u-TooNMqYhRmw",
+      authDomain: "auth-knowji.firebaseapp.com",
+      projectId: "auth-knowji",
+      storageBucket: "auth-knowji.firebasestorage.app",
+      messagingSenderId: "931262954578",
+      appId: "1:931262954578:web:cdb4e21e82e68eda57738b",
+      measurementId: "G-C7SYLYMZTQ"
+    };
+
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.firestore();
 
+    // Logout Function
     function logout() {
-      auth.signOut().then(() => {
-        window.location.href = 'https://lukasugianskis.github.io/knowji-web/sign-in'; // replace with your login page
-      });
+      auth.signOut()
+        .then(() => {
+          window.location.href = 'https://lukasugianskis.github.io/knowji-web/sign-in';
+        })
+        .catch(err => alert(err.message));
+    }
+
+    // Delete Account Function
+    async function deleteAccount() {
+      const user = auth.currentUser;
+      if (!user) return alert("No user signed in.");
+
+      const confirmDelete = confirm("Are you sure you want to delete your account? This cannot be undone.");
+      if (!confirmDelete) return;
+
+      try {
+        // Delete user document in Firestore
+        await db.collection("users").doc(user.uid).delete();
+
+        // Delete user in Firebase Auth
+        await user.delete();
+
+        alert("Your account has been deleted.");
+        window.location.href = 'https://lukasugianskis.github.io/knowji-web/sign-in';
+      } catch (err) {
+        // If user recently signed in, re-authentication might be required
+        if (err.code === 'auth/requires-recent-login') {
+          alert("Please sign in again to delete your account.");
+          auth.signOut();
+          window.location.href = 'https://lukasugianskis.github.io/knowji-web/sign-in';
+        } else {
+          alert(err.message);
+        }
+      }
     }
   </script>
 </body>

@@ -175,18 +175,32 @@ function render() {
 render();
 
 /* Username live check */
+/* Username live check */
 let usernameTimeout;
 async function checkUsername() {
   clearTimeout(usernameTimeout);
-  const val = input.value.trim();
+  let val = input.value.trim();
 
-  if (!/^[a-zA-Z0-9.-]*$/.test(val)) {
-    status.innerText = "Only letters, numbers, . or -";
+  // Automatically add @ at the start
+  if (val && val[0] !== "@") val = "@" + val;
+
+  // Update input display
+  input.value = val;
+
+  // Validation
+  if (!/^@[a-zA-Z0-9.-]+$/.test(val)) {
+    status.innerText = "Only letters, numbers, . or - after @";
     status.className = "status err";
     return;
   }
 
-  if (!val) {
+  if (val.endsWith(".") || val.endsWith("-")) {
+    status.innerText = "Username cannot end with . or -";
+    status.className = "status err";
+    return;
+  }
+
+  if (val.length <= 1) {
     status.innerText = "";
     return;
   }
@@ -214,33 +228,38 @@ async function next() {
   if (step >= steps.length) return;
 
   const currentStep = steps[step];
-  const val = input.value.trim();
+  let val = input.value.trim();
 
-  if (val) {
-    if (currentStep.key === "username") {
-      if (!/^[a-zA-Z0-9.-]+$/.test(val)) return;
+  if (currentStep.key === "username") {
+    // Ensure starts with @
+    if (!val.startsWith("@")) val = "@" + val;
 
-      const taken = await db
-        .collection("users")
-        .where("username", "==", val)
-        .get();
+    // Check ends with valid char
+    if (val.endsWith(".") || val.endsWith("-")) return;
 
-      if (!taken.empty) return;
+    // Check only valid characters
+    if (!/^@[a-zA-Z0-9.-]+$/.test(val)) return;
+
+    // Check taken
+    const taken = await db
+      .collection("users")
+      .where("username", "==", val)
+      .get();
+    if (!taken.empty) return;
+
+    data[currentStep.key] = val;
+  } else if (currentStep.key === "age") {
+    const ageNum = parseInt(val);
+    if (isNaN(ageNum) || ageNum < 13) {
+      status.innerText = "You must be at least 13";
+      status.className = "status err";
+      return;
     }
-
+    data[currentStep.key] = ageNum;
+  } else {
     data[currentStep.key] = val;
   }
 
-  step++;
-
-  if (step < steps.length) {
-    render();
-  } else {
-    finish();
-  }
-}
-
-function skip() {
   step++;
   step < steps.length ? render() : finish();
 }

@@ -2,163 +2,41 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Login</title>
-
- <link rel="icon" href="favicon.png" type="image/png">
+<title>Account / Login</title>
+<link rel="icon" href="favicon.png" type="image/png">
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
 <style>
-* {
-    box-sizing: border-box;
-    font-family: "system-ui", -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-body {
-    margin: 0;
-    height: 100vh;
-    background: #f6f7f9;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.card {
-    width: 420px;
-    background: #fff;
-    border-radius: 28px;
-    padding: 40px 36px;
-    box-shadow: 0 0 0 1px #e5e9f0;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.brand {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-weight: 700;
-    font-size: 22px;
-    margin-bottom: 18px;
-}
-
-.brand img {
-    width: 28px;
-    height: 28px;
-}
-
-h1 {
-    margin: 0 0 24px;
-    font-size: 36px;
-    font-weight: 800;
-    color: #0f172a;
-}
-
-.toggle {
-    display: flex;
-    background: #f1f4f9;
-    border-radius: 999px;
-    padding: 6px;
-    margin: 0 auto 26px;
-    width: fit-content;
-}
-
-.toggle button {
-    border: none;
-    background: transparent;
-    padding: 10px 22px;
-    border-radius: 999px;
-    font-weight: 600;
-    cursor: pointer;
-    color: #64748b;
-    transition: 0.3s;
-}
-
-.toggle .active {
-    background: #fff;
-    color: #0f172a;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-}
-
-.auth-btn {
-    width: 100%;
-    padding: 14px;
-    border-radius: 999px;
-    border: 2px solid #e5e9f0;
-    background: #fff;
-    font-size: 16px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    cursor: pointer;
-    color: #0f172a;
-    margin-bottom: 14px;
-}
-
-.auth-btn:hover {
-    background: #f1f4f9;
-}
-
-.auth-btn.apple {
-    border-color: #e5e9f0;
-}
-
-.divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 26px 0;
-    color: #64748b;
-    font-weight: 600;
-}
-
-.divider::before,
-.divider::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: #e5e9f0;
-}
-
-input {
-    width: 100%;
-    padding: 14px;
-    border-radius: 999px;
-    border: 2px solid #e5e9f0;
-    font-size: 15px;
-    margin-bottom: 12px;
-}
-
-.hidden {
-    display: none;
-}
-
-/* Smooth slide animation */
-.slide-down {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease, padding 0.5s ease;
-}
-
-.slide-down.active {
-    max-height: 500px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-}
+* { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
+body { margin: 0; height: 100vh; background: #f6f7f9; display: flex; align-items: center; justify-content: center; }
+.card { width: 420px; background: #fff; border-radius: 28px; padding: 40px 36px; box-shadow: 0 0 0 1px #e5e9f0; text-align: center; overflow: hidden; position: relative; }
+.brand { display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; font-size: 22px; margin-bottom: 18px; }
+.brand img { width: 28px; height: 28px; }
+h1 { margin: 0 0 24px; font-size: 36px; font-weight: 800; color: #0f172a; }
+.toggle { display: flex; background: #f1f4f9; border-radius: 999px; padding: 6px; margin: 0 auto 26px; width: fit-content; }
+.toggle button { border: none; background: transparent; padding: 10px 22px; border-radius: 999px; font-weight: 600; cursor: pointer; color: #64748b; transition: 0.3s; }
+.toggle .active { background: #fff; color: #0f172a; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.auth-btn { width: 100%; padding: 14px; border-radius: 999px; border: 2px solid #e5e9f0; background: #fff; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; color: #0f172a; margin-bottom: 14px; }
+.auth-btn:hover { background: #f1f4f9; }
+.auth-btn.apple { border-color: #e5e9f0; }
+.divider { display: flex; align-items: center; gap: 12px; margin: 26px 0; color: #64748b; font-weight: 600; }
+.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #e5e9f0; }
+input { width: 100%; padding: 14px; border-radius: 999px; border: 2px solid #e5e9f0; font-size: 15px; margin-bottom: 12px; }
+.hidden { display: none; }
+.slide-down { max-height: 0; overflow: hidden; transition: max-height 0.5s ease, padding 0.5s ease; }
+.slide-down.active { max-height: 500px; padding-top: 12px; padding-bottom: 12px; }
 </style>
 </head>
 <body>
 
-<div class="card">
+<div class="card" id="app">
 
     <div class="brand">
         <img src="webicon.svg" alt="Star">
@@ -172,7 +50,7 @@ input {
         <button id="signinTab" class="active">Sign in</button>
     </div>
 
-    <!-- Email Sign In Button at top -->
+    <!-- Email Sign In Button -->
     <button class="auth-btn" onclick="showEmail()">
         <i class="fa-regular fa-envelope"></i>
         Sign in with Email
@@ -180,12 +58,10 @@ input {
 
     <div id="signinBtns">
         <div class="divider">Other options</div>
-
         <button class="auth-btn apple" onclick="appleLogin()">
             <i class="fa-brands fa-apple"></i>
             Sign in with Apple
         </button>
-
         <button class="auth-btn" onclick="googleLogin()">
             <i class="fa-brands fa-google"></i>
             Sign in with Google
@@ -211,10 +87,6 @@ input {
 
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
 <script>
 /* ======= Firebase Init ======= */
 const firebaseConfig = {
@@ -226,24 +98,19 @@ const firebaseConfig = {
   appId: "1:931262954578:web:cdb4e21e82e68eda57738b",
   measurementId: "G-C7SYLYMZTQ"
 };
-
 firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/* ======= Central Redirect Function ======= */
+/* ======= Redirect after login/onboarding check ======= */
 async function redirectAfterLogin(user) {
   if (!user) return;
 
   try {
     const snap = await db.collection("users").doc(user.uid).get();
-
     if (snap.exists && snap.data().onboardingComplete === true) {
-      // Already completed onboarding → go to home
       window.location.href = "/knowji-web/home";
     } else {
-      // New user or not completed → go to onboarding
       window.location.href = "/knowji-web/onboarding";
     }
   } catch (err) {
@@ -257,10 +124,33 @@ auth.onAuthStateChanged(user => {
   if (user) {
     redirectAfterLogin(user);
   } else {
-    // User not signed in, show UI
     document.getElementById('app').style.display = 'block';
   }
 });
+
+/* ======= Tab toggle ======= */
+const signupTab = document.getElementById('signupTab');
+const signinTab = document.getElementById('signinTab');
+const signupFormDiv = document.getElementById('signupForm');
+const emailSignInDiv = document.getElementById('emailSignInBox');
+
+signupTab.addEventListener('click', () => {
+    signupFormDiv.classList.add('active');
+    emailSignInDiv.classList.remove('active');
+    signupTab.classList.add('active');
+    signinTab.classList.remove('active');
+});
+
+signinTab.addEventListener('click', () => {
+    signupFormDiv.classList.remove('active');
+    signupTab.classList.remove('active');
+    signinTab.classList.add('active');
+});
+
+// Email toggle
+function showEmail() {
+    emailSignInDiv.classList.toggle('active');
+}
 
 /* ======= Login Methods ======= */
 
@@ -288,7 +178,7 @@ function emailSignIn() {
     .catch(err => alert(err.message));
 }
 
-// Email Sign Up (new users → onboarding)
+// Email Sign Up
 function emailSignUp() {
   const email = document.getElementById('signupEmail').value;
   const password = document.getElementById('signupPassword').value;
@@ -298,6 +188,5 @@ function emailSignUp() {
     .catch(err => alert(err.message));
 }
 </script>
-
 </body>
 </html>
